@@ -1,0 +1,66 @@
+# New OpenshiftIO app On-boarding
+
+Main Ref: https://docs.google.com/document/d/14rKA_Uxve5f_mFNK4vhKhXrMcquiy25AQ5tpHJQwtbc/edit#heading=h.2r3a4udhggjl
+
+## Steps in brief:
+
+1. Create a github org and a repo under it with desired code.
+
+2. The repo should have:
+    ** Elegant build-able Dockerfile(as per best docker practices)
+    ** Shell scripts to:
+        *** Set build ENV for Jenkins slave
+
+            Ref:
+                https://github.com/fabric8-hdd/supervisor/blob/master/cico_build_deploy.sh
+                https://github.com/fabric8-hdd/supervisor/blob/master/cico_setup.sh
+
+        *** Test the app
+
+            Ref:
+                https://github.com/fabric8-hdd/supervisor/blob/master/cico_run_tests.sh
+                https://github.com/fabric8-hdd/supervisor/blob/master/run_tests.sh
+
+        *** Wrapper around Code syntactic and semantic validation scripts. ex: Linter scripts
+
+            Ref:
+                https://github.com/fabric8-hdd/supervisor/blob/master/cico_run_eslint.sh
+                https://github.com/fabric8-hdd/supervisor/blob/master/run_eslint.sh
+
+    ** OC resource templates to describe deployment on oc cluster
+
+       Ref:
+           https://github.com/fabric8-hdd/supervisor/blob/master/openshift/template.yaml
+
+    ** Script to automate deployment of resources in above mentioned OC templates on openshift cluster
+
+       Ref:
+           https://github.com/fabric8-hdd/supervisor/blob/master/openshift/deploy.sh
+
+  Verify the app on local minishift cluster.
+
+  For detailed installation steps please refer: INSTALL.md of https://github.com/fabric8-hdd/supervisor
+
+3. The app should have integration with ci.centos.org for image builds and image to be stored in centos registry.
+
+  Ref:
+      https://github.com/CentOS/container-index#quickstart
+
+4. For the scripts in step 2 above to be invoked by the dev-tools maintained Jenkins infra for:
+    ** Building the app's docker image
+    ** Run UTs
+    ** Push image to registry on UT validation
+    ** Deploy the image to stage cluster as container/s
+   One needs to add job configuration specific to the new app as described in https://github.com/almighty/almighty-jobs/blob/master/README.adoc
+
+   Ref: https://github.com/fabric8-hdd/almighty-jobs/pull/1
+
+5. At this stage, the service delivery team can be requested to either provide a dedicated saas git repo or (review of) an entry in the saas-openshiftio
+   Hereafter, service delivery team ticket can be raised to on-board the new app.
+
+   Ref:
+    1. https://gitlab.cee.redhat.com/dtsd/housekeeping/issues/974
+    2. https://github.com/openshiftio/saasherder/blob/master/README.md
+       a. Dedicated repo: https://github.com/fabric8-hdd/saas-hdd/pull/1
+       b. Entry in saas-openshifio --
+          https://github.com/openshiftio/saas-openshiftio/blob/master/dsaas-services/fabric8-ui.yaml
