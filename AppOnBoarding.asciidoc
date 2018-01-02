@@ -64,3 +64,5 @@ Main Ref: https://docs.google.com/document/d/14rKA_Uxve5f_mFNK4vhKhXrMcquiy25AQ5
        a. Dedicated repo: https://github.com/fabric8-hdd/saas-hdd/pull/1
        b. Entry in saas-openshifio --
           https://github.com/openshiftio/saas-openshiftio/blob/master/dsaas-services/fabric8-ui.yaml
+
+   Note: The service delivery team does an annual shut down around mid december(20th Dec) when no new services can be added
