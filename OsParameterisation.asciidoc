@@ -1,0 +1,15 @@
+
+# To generate a image with your desired OS
+
+The following changes are required in the fabric8-hypothesis-core-image repo.
+
+1. Check if a setup file is present for the OS or not in the setup_env folder.
+* If **yes**, no need to worry your OS is already supported. 
+* If **no**, write a shell(.sh) file containing install commands of the libraries for your OS, name the file according to the OS in lower e.g fedora. You can send a PR, if you want.
+* Change the **DEFAULT_OS** and **DEFAULT_OS_VERSION** in the constants.sh file.
+2. To change the pull resgitry, push registry and organization, make changes to the respective variables in the constants.sh file.
+3. Run **cico_build_deploy.sh** and wait for the images to be pushed.
+
+Then the following actions are required in the other-fabric8-api-image repos.
+
+1. Run **cico_build_deploy.sh** of the other repos and wait for the images to be pushed.
