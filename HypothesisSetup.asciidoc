@@ -1,0 +1,71 @@
+# Building the fabric8-hypothesis-core-image image
+
+1. Fork this repo: https://github.com/fabric8-hdd/fabric8-hypothesis-core-image.git
+2. To change the default node version, npm version, push registry, pull registry, organisation and port number, change the respective values in the constants.sh 
+3. Trigger the build using cico_build_deploy.sh script and wait for pushes to be complete.
+ 
+
+# Building the fabric8-hypothesis-manager-api-image image
+
+1. First make sure that you have built and pushed the nodejs images (built from fabric8-hypothesis-core-image) with the approriate default node version, npm version, push registry, pull registry, organisation and port values. It acts as the base layer for other images.
+2. Fork this repo: https://github.com/fabric8-hdd/fabric8-hypothesis-manager-api-image.git
+* For changing the app_name, change the APP_NAME value in the app_constants.sh file, this will chnage the image name.
+* For changing the port, route_path, route_prefix and hostname, change the respective values in the supervisor.env file in the openshift folder.
+NOTE: Changes to supervisor.env will be affected only for deployments using openshift/deploy.sh and will not be applicable for the default osio CI/CD and the port as a parameter needs to be changed at the time of image build as well as the port exposed for service will be exposed at image build time itself.
+3. Trigger the build using cico_build_deploy.sh script and wait for pushes to be complete.
+
+# Building the fabric8-hypothesis-data-api-image image
+
+1. First make sure that you have built and pushed the nodejs images (built from fabric8-hypothesis-core-image) with the approriate default node version, npm version, push registry, pull registry, organisation and port values. It acts as the base layer for other images.
+2. Fork this repo: https://github.com/fabric8-hdd/fabric8-hypothesis-data-api-image.git
+* For changing the app_name, change the APP_NAME value in the app_constants.sh file, this will chnage the image name.
+* For changing the port, route_path, route_prefix and hostname, change the respective values in the data-api.env file in the openshift folder.
+NOTE: Changes to data-api.env will be affected only for deployments using openshift/deploy.sh and will not be applicable for the default osio CI/CD and the port as a parameter needs to be changed at the time of image build as well as the port exposed for service will be exposed at image build time itself.
+3. Trigger the build using cico_build_deploy.sh script and wait for pushes to be complete.
+
+
+# Building the fabric8-hypothesis-measurements-api-image image
+
+1. First make sure that you have built and pushed the nodejs images (built from fabric8-hypothesis-core-image) with the approriate default node version, npm version, push registry, pull registry, organisation and port values. It acts as the base layer for other images.
+2. Fork this repo: https://github.com/fabric8-hdd/fabric8-hypothesis-measurements-api-image.git
+* For changing the app_name, change the APP_NAME value in the app_constants.sh file, this will chnage the image name.
+* For changing the port, route_path, route_prefix and hostname, change the respective values in the supervisor.env file in the openshift folder.
+NOTE: Changes to supervisor.env will be affected only for deployments using openshift/deploy.sh and will not be applicable for the default osio CI/CD and the port as a parameter needs to be changed at the time of image build as well as the port exposed for service will be exposed at image build time itself.
+3. Trigger the build using cico_build_deploy.sh script and wait for pushes to be complete.
+
+
+# Verification
+
+1. Start oc cluster
+   ```
+   oc cluster up
+   ```
+2. Fork the repository to your github account
+3. Clone your fork and cd into your clone
+   ```
+    git clone <fork_ssh_clone_url>
+    cd <repo-name>
+   ```
+4. Create a oc project
+  ```
+    https://docs.openshift.com/enterprise/3.0/dev_guide/projects.html#create-a-project
+   ```
+5. Deploy the app
+   ```
+    /bin/bash openshift/deploy.sh
+   ```
+
+## Important Troubleshooting Links
+
+1. To resetup minishift
+   ```
+    https://github.com/minishift/minishift/issues/701#issuecomment-292264901
+   ```
+2. If you are not able to run docker as non-root user, follow:
+   ```
+    https://github.com/moby/moby/issues/17645#issuecomment-153291483
+   ```
+3. The oc commands need to run as root so use sudo if current system user is sudo enabled.
+4. If docker errors out "docker pull from insecure registry", follow:
+   ```
+   https://forums.docker.com/t/error-with-docker-pull-from-insecure-registry/31007
