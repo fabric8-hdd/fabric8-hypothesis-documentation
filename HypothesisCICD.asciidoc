@@ -1,0 +1,27 @@
+# Fabric8-Hypothesis CI/CD Process
+
+Details on App-Onboarding: https://docs.google.com/document/d/14rKA_Uxve5f_mFNK4vhKhXrMcquiy25AQ5tpHJQwtbc/edit#heading=h.2r3a4udhggjl
+
+* When a PR is raised on any fabric8-hypothesis repo with CI/CD pipelines established, unit-tests(`cico_run_tests.sh`) and linter(`cico_run_eslint.sh`)
+  evaluations can be triggered on them by commenting on the PR as `[test]` by anyone listed as `admin` in the `openshift-cico-jobs` repo.
+  Once this is done, `centos-ci`(should be invited as collaborator to the team).
+* When a commit is made to the master branch, the execution of `cico_build_deploy.sh` is started and accordingly tests on image and subsequently
+  image builds are triggered after successful tests. If the builds succeed, the image tagged with latest github commit-id is deployed on stage
+  cluster. The tests that are run during this process are:
+  ** Unit tests
+  ** Infra tests
+    *** Os version test
+    *** OC version test
+    *** Docker version test
+    *** node and npm version test
+    *** Port test
+* Load/Performance tests and integration tests(yet to be added) will be performed on the application deployed on stage cluster.
+  After which the promotion to production happens by a commit on `saas-hdd`(at https://github.com/openshiftio/saas-hdd/blob/master/hdd-services/supervisor.yaml#L2)
+  with the github commit hash of latest tested PR. And the rest is automated by the OSIO deploy pipelines.
+
+Note:
+* PRs to `saas-hdd` should be post internal review by raising a PR on the fork maintained under fabric8-hdd(https://github.com/fabric8-hdd/saas-hdd)
+* Job configuration PRs to `openshift-cico-jobs` should be reviewed internally by posting a PR to its fork under fabric8-hdd(https://github.com/fabric8-hdd/almighty-jobs)
+* Ideally the image build aspects of cico-build-deploy.sh can be done away with by integration with container-pipeline-service
+  (Details: https://github.com/CentOS/container-pipeline-service) by a config PR on container-index(https://github.com/CentOS/container-index).
+  However, currently since the container-pipeline-service does not support providing build args, our integration with container-pipeline-service is broken.
