@@ -1,0 +1,168 @@
+# Fabric8 Hypothesis Repo Walk-Through
+
+## Introduction
+
+All hypothesis repositories are under the github organisation: `fabric8-hdd`
+Typically every osio service repo contains following categories of files/scripts in addition to functional code:
+
+1. CI scripts: This is required for automatic image builds and subsequent automatic deployments on OSIO as per OSIO guidelines
+   described in: `https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/AppOnBoarding.asciidoc``
+    * Makefile
+    * Linter(Repo syntactic validation)
+    * Image build and tests
+2. Docker files for containerising the application
+3. OSIO deployment template and a script that can aid in local deployment of template on openshift/minishift cluster
+   Note: The OSIO CI/CD does not recognise the route configuration in the above mentioned template but can be used for local
+   deployments.
+4. LICENSE file that briefs the app license and usage and distribution terms.
+   All fabric8-hypothesis repos are MIT licensed.
+5. .gitignore file to specify list of directories or files to be omitted from github commits
+
+
+## Fabric8-Hypothesis Repo Overview:
+
+fabric8-hypothesis contains the following repositories:
+
+1. Common/core:
+    a. fabric8-hypothesis-core:
+        This repo contains generic contracts, interfaces used by other fabric8 hypothesis modules
+    b. fabric8-hypothesis-core-image:
+        This repo contains generic aspects of the build like generalised(parametrised) cico scripts that can be used by other
+        modules of Hypothesis stack by passing relevant parameters. It also contains reusable Dockerfile, Dockerfile for base
+        nodejs image builds, generic tests and setup scripts that are relevant to (m)any hypothesis module etc..
+2. Supervisor:
+    * Api defining libraries
+        ** fabric8-data-api
+        ** fabric8-manager-api
+        ** fabric8-measurements-api
+
+    * Api and cico instantiation modules:
+        The *-api-image is instantiation of apis in respective *-api along with scripts that instantiate respective cico scripts in
+    fabric8-hypothesis-core-image using relevant parameters.
+        ** fabric8-data-api-image
+        ** fabric8-manager-api-image
+        ** fabric8-measurements-api-image
+3. Documentation:
+    Any documentation pertaining to Hypothesis stack as a whole would be made part of repo `fabric8-hypothesis-documentation``
+    And anything specific to any module would be documented in the corresponding repository itself.
+4. All integration and performance tests will be part of `fabric8-hypothesis-tests`
+5. Planning activities including triage, analysis and moving bugs to relevant hypothesis module for any feature or enhancement
+   will begin with an issue on `fabric8-hypothesis-planning`.
+6. CI/CD forks:
+    * almighty-jobs
+    * saas-hdd
+    * container-index
+
+
+## Generic Repo Walk Through:
+
+* fabric8-hypothesis-core-image
+    ** The contents of this repo are:
+        *** cico_tests
+            **** run_infra_tests.sh:
+                Tests that are run for validating if the image was built in accordance with parameters passed.
+                Currently Infrastructure tests that are run are:
+                ***** OS verification test:
+                        Validates on the built docker image if the OS(as in /etc/*-release) is same as the parameter pasased to build the docker image
+                ***** npm and nodejs version tests:
+                        Hypothesis modules are built with fixed set of supported nodejs and npm version combinations as in:
+                        `https://github.com/fabric8-hdd/fabric8-hypothesis-core-image/blob/master/constants.sh#L7`
+                        and validated for different parameters like the relevance/compatibility of code on the supported list of versions via unit tests.
+                        As part of node and npm infra tests, the version of node and npm are verifed to be same as versions passed as parameters.
+                ***** port validation test:
+                        As part of this test, the port exposed via dockerfile is verified to be same as the port value in passed parameter.
+            **** run_tests.sh:
+                    ***** docker version test:
+                        Checks version of docker installed for building hypothesis images with the version expected for hypothesis images build.
+                        The version of docker required for hypothesis image builds is 17+ as hypothesis modules use build args even for the base
+                        image in the from tag(supported only starting docker 17 -- 1.17 on fedora)
+                    ***** oc_infra_test:
+                        Checks version of oc with version of oc intended.
+                    ***** Runs test image builds as part of which unit tests are run on code. Going forward, the idea is to add tests related to
+                          persistence layer by deploying test image and running tests.
+        *** cico_utils:
+            **** prerequisites: Sets up os specific base environment for image build process like:
+                    a. package installations
+                    b. system registrations
+                Any credentials/sensitive data for the same are expected to be injected to image build machines as env vars.
+                ***** centos.sh
+                ***** rhel.sh
+            **** setup_env.sh: Installs non-os specific dependencies, installs npm dependencies and relocates the shared resurces to required locations
+                 in current repo directory where `fabric8-hypothesis-core-image` is marked as a npm dependency and makes it ready for triggering image builds.
+            **** setup_utils.sh: Provides utility methods like:
+                ***** triggering image build
+                ***** docker login
+                ***** tagging image
+                ***** push to registry, etc...
+        *** setup_env: Sets up os specific base environment within docker image
+            **** centos.sh
+            **** fedora.sh
+            **** rhel.sh
+        *** os_wrapper.sh: Wrapper script that delegates the call to appropriate os specific script within the image
+        *** cico_build_deploy.sh: This script will be invoked on commit to master(based on a configuration in `openshift-cico-jobs`)
+        The main purpose of this script is to generate environment for image builds, trigger builds and backup the built images on configured registry.
+        Wrapper script that builds nodejs images with required parameters like:
+            **** Base OS
+            **** node - npm versions
+        *** constants.sh: Exposes variables as a single point of update to vary:
+            **** Base OS
+            **** Supported list of node and npm version combinations.
+                 Update this list to add/remove any new node-npm version to the list of supported node-npm versions.
+            **** Docker registries for push and/or pull of images
+            **** The OS of build machine
+        *** Dockerfile: Dockerfile for nodejs builds
+        *** Dockerfile.app: Dockerfile that can be used by any nodejs based applications for containerising the app.
+            This is currently used by all hypothesis services.
+        *** Dockerfile.tests: Dockerfile to generate test image for the application and as part of it UTs, infra tests are run.
+        *** package.json and package-lock.json: Contains npm dependencies including their expected versions or limits on them.
+        *** VERSION.sh: App version used for image tagging is stored here. Edit this file to bump the image version.
+        *** .gitignore: Add any folder or file that doesn't need to be commited to github here.
+        *** LICENSE: All hypothesis modules are MIT licensed and any repo has to contain a copy of the MIT license.
+* fabric8-hypothesis-*-api:
+    ** src: The apis, request handler code and validations all reside in this directory.
+    ** tests: UTs for the apis in src/
+    ** .eslintrc.json: eslinter is used for checking syntactic correctness of the repo.
+        This file is a configuration for the eslinter.
+        Refer: https://eslint.org/docs/user-guide/configuring for details of configuration options available.
+    ** .gitignore: Add any folder or file that doesn't need to be commited to github here.
+    ** cico_run_eslint.sh: This is a wrapper script that invokes eslinter for syntactic validation.
+       This script will be run(config required in `openshift-cico-jobs` repo) on PRs by commenting as `[test]` on PRs by admins listed in the
+       `openshift-cico-jobs` repo.
+    ** cico_run_tests.sh: This is a wrapper script that runs UTs.
+       This script will be run(config required in `openshift-cico-jobs` repo) on PRs by commenting as `[test]` on PRs by admins listed in the
+       `openshift-cico-jobs` repo.
+    ** LICENSE: All hypothesis modules are MIT licensed and any repo has to contain a copy of the MIT license.
+    ** package.json and package-lock.json: Contains npm dependencies including their expected versions or limits on them.
+    ** README.md: Description on purpose of the repo.
+* fabric8-hypothesis-*-api-image:
+    ** openshift
+        *** template.yaml: Openshift deployment template for the application.
+        This template will be used for application deployment by the OSIO deployment framework.
+        This template can also be used for local deployment of the application.
+        Note: OSIO deployment framework will not use the route configuration in `template.yaml` for security reasons.
+        *** supervisor.env: Parameters that can be passed to the `oc create` command to create local deployments.
+        Note: This is not used by OSIO deployment framework.
+        *** README.md: Details that explain how to use `deploy.sh` for deployments on non-OSIO clusters
+        *** deploy.sh: A script that runs `oc create` using `template.yaml` to deploy application on openshift(minishift) cluster.
+    ** tests: UTs for the apis in src/
+    ** .eslintrc.json: eslinter is used for checking syntactic correctness of the repo.
+        This file is a configuration for the eslinter.
+        Refer: https://eslint.org/docs/user-guide/configuring for details of configuration options available.
+    ** app_constants.sh: Provides single point of updates for:
+        *** APP_NAME: Used to update the name of image during builds.
+        *** APP_PORT: Update the value of this to change the application port
+        *** BUILD_MACHINE_OS: The value of this field should be the OS on which image builds are triggered,
+    ** app_version.sh: Version of application that will be used for tagging the application images.
+       Update this field to bump the application version.
+    ** cico_build_deploy.sh: This script sets up the environment for image builds and triggers image builds.
+       It is in essence an wrapper script that uses utilities from setup_env and setup_utils from `fabric8-hypothesis-*-api` repositories.
+       Images are generated for each combination of supported nodejs-npm versions after finding the version combination usable for the app by running tests.
+    ** cico_run_eslint.sh: This is a wrapper script that invokes eslinter for syntactic validation.
+       This script will be run(config required in `openshift-cico-jobs` repo) on PRs by commenting as `[test]` on PRs by admins listed in the
+       `openshift-cico-jobs` repo.
+    ** cico_run_tests.sh: This is a wrapper script that runs UTs.
+       This script will be run(config required in `openshift-cico-jobs` repo) on PRs by commenting as `[test]` on PRs by admins listed in the
+       `openshift-cico-jobs` repo.
+    ** LICENSE: All hypothesis modules are MIT licensed and any repo has to contain a copy of the MIT license.
+    ** package.json and package-lock.json: Contains npm dependencies including their expected versions or limits on them.
+    ** README.md: Description on purpose of the repo.
