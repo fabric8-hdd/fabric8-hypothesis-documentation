@@ -1,9 +1,10 @@
 # Preferred dev Environment setup
 
 1. Visual Studio Code: https://code.visualstudio.com/Download
-2. Visual Studio Code plugins:
+2. Docker: https://docs.docker.com/install/
+3. Visual Studio Code plugins:
 * Name: Docker, Publisher: Microsoft
-3. Minishift 
+4. Minishift 
 * Overview docs: https://docs.openshift.org/latest/minishift/index.html
 * Driver Plug-in setup: https://docs.openshift.org/latest/minishift/getting-started/setting-up-driver-plugin.html
 * Installing minishift: https://docs.openshift.org/latest/minishift/getting-started/installing.html
@@ -22,3 +23,12 @@
 * https://www.w3schools.com/nodejs/default.asp
 * https://nodeschool.io/
 * https://www.youtube.com/watch?v=-u-j7uqU7sI&list=PL6gx4Cwl9DGBMdkKFn3HasZnnAqVjzHn_
+
+3. Docker:
+* https://docs.docker.com/get-started/
+* https://docs.docker.com/
+* https://docker-curriculum.com/
+
+4. Containers:
+* https://www.docker.com/what-container
+* https://www.youtube.com/watch?v=EnJ7qX9fkcU
