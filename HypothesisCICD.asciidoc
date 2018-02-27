@@ -20,6 +20,7 @@ Details on App-Onboarding: https://docs.google.com/document/d/14rKA_Uxve5f_mFNK4
   with the github commit hash of latest tested PR. And the rest is automated by the OSIO deploy pipelines.
 
 Note:
+
 * PRs to `saas-hdd` should be post internal review by raising a PR on the fork maintained under fabric8-hdd(https://github.com/fabric8-hdd/saas-hdd)
 * Job configuration PRs to `openshift-cico-jobs` should be reviewed internally by posting a PR to its fork under fabric8-hdd(https://github.com/fabric8-hdd/almighty-jobs)
 * Ideally the image build aspects of cico-build-deploy.sh can be done away with by integration with container-pipeline-service
