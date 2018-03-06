@@ -3,6 +3,8 @@
 This repository is intended as the single source of information related to Hypothesis stack.
 Accordingly, following details are available in this repository:
 
+[Context](https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Context.asciidoc)
+
 [Architecture](https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/HypothesisArchitecture.asciidoc)
 
 [Development Environment Setup](https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/DevEnvironmentSetup.asciidoc)
