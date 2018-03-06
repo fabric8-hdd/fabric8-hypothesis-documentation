@@ -1,0 +1,181 @@
+This document aims to briefly explain some terminology and concepts that form up the context for further documentation.
+
+# Monolithic Architecture
+
+In software engineering, a monolithic application describes a single-tiered software application
+in which the user interface and data access code are combined into a single program from a single platform.
+A monolithic application is self-contained, and independent from other computing applications.
+
+##### Problems with Monolithic Architecture:
+
+	* Modularity of the application depends heavily on the programming language used.
+	  Not flexibilty.
+	* Even to scale out a small aspect of the app/service, you have to scale the whole service.
+	  Not condusive.
+	* If one aspect of the app fails, the whole app comes down.
+	* To update a small part of your app, you need to update and re-deploy the application. Leads to
+	 	hefty overheads and costing.
+	* If you desire to upgrade the programming stack of some feature of your app due to some obvious
+	 	advantages the new programming language provides, you will have to upgrade the whole apps code.
+
+To understand with an example,
+checkout out this article: http://microservices.io/patterns/monolithic.html
+
+To rescue from the above problems associated with monolithic architecture, enter, the microservices architecture.
+
+# Microservices Architecture
+
+An engineering approach focused on decomposing an application into single-function modules
+with well defined interfaces which are independently deployed and operated and operated
+by a small team who owns the entire lifecycle of the service.
+
+Microservices accelerate delivery by minimizing communication and coordination between people
+while reducing the scope and risk of change.
+
+Microservices architecture eliminates the trouble of monolithic architecture. Every feature/module/aspect
+of our application can be built and hosted as seperate microservices, and a every microservice can have isolated
+own team, own tech stack. Hence, providing great flexibilty.
+
+To understand the pattern in depth, with the same example model,
+checkout : http://microservices.io/patterns/microservices.html
+
+# Containers
+
+Containers are a solution to the problem of how to get software to run reliably when moved 
+from one computing environment to another. This could be from a developer's laptop to
+a test environment, from a staging environment into production, and perhaps from a physical machine in
+a data center to a virtual machine in a private or public cloud.
+
+Losely speaking, containers are just linux processes with some tight constraints ( cgroups ) with a whole networking,
+file system and namespace inside of it. Containers have everything isolated from each other. To run and manage containers
+on a machine, we need a container runtime and supporting utilities.
+
+# Container image
+
+A container image is the blueprint of a container environment. The image is defined via an image
+configuration file and a contextual environment.
+
+# Docker
+
+Docker is a container platform which provides all the requisites and supporting utilities to
+deal with containers. Docker also maintains docker hub, which is a repository to browse and share
+container images.
+
+Now due to advantages and ease of management containers provide, enterprises have shifting
+from hosting their app/services on VMs directly to host inside containers. There are other container platforms 
+availabile too, such as Rkt.
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/VMvsContainer.png[]
+
+Typically, microservices are encapsulated inside containers. A 1-1 relationship
+between a microservice and container forms up a typical pattern.
+For example, the front-end, back-end and database services running in their seperate
+containers, interacting via networking arrangements configured among them.
+
+Now, if we resort to configuring, maintaining and setting up each container seperatelly, it would be impossible
+to scale in terms of availability. As the microservices grow and scale up, the container management becomes very
+overwhelming. To cope up with this, we require a container orchestration solution. Enter Kubernetes...
+
+For an overview of the container-stack, refer to the pic below.
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/container-stack.jpg[]
+
+# Kubernetes
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/kubernetes.jpg[]
+
+Kubernetes is a container orchestration engine which lets you run containerised apps and services on your 
+infrastructure, which interact among each other and the outside networks. Kubernetes can provide
+such orchestration on scale with assured service availability and security.
+
+	Some features: 
+	* Intelligent Scheduling (of Pods)
+	* Self healing
+	* Horizontal Scaling
+	* Service Discovery & Load Balancing
+	* Automated Deployment rollouts and rollbacks.
+	* Secret and configuration management.
+
+Basic Architecture and concepts:
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/kubernetes-architecture.jpg[]
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/kubernetes-architecture-1.jpg[]
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/kubernetes-architecture-2.jpg[]
+
+
+So, broadly, we provide Kubernetes with an N 'nodes' cluster and ask it to maintain a desired state of
+configuration on the infra. Its the Kubernetes' job to maintain the equilibrium, DESIRED_STATE=CURRENT_STATE.
+
+An overview of Kubernetes by the founder himself: https://www.youtube.com/watch?v=WwBdNXt6wO4&t=1385s
+
+# OpenShift
+
+[OpenShift](https://www.openshift.com/) provides developers with an environment for building and deploying Docker-formatted
+ containers, and then managing them with the open source Kubernetes container orchestration platform.
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/ocp-architecture.gif[]
+
+
+OpenShift builds a developer-centric workflow around Docker containers and Kubernetes runtime concepts.
+An Image Stream lets you easily tag, import, and publish Docker images from the integrated registry.
+A Build Config allows you to launch Docker builds, build directly from source code, or trigger Jenkins
+Pipeline jobs whenever an image stream tag is updated. A Deployment Config allows you to use custom 
+deployment logic to rollout your application, and Kubernetes workflow objects like DaemonSets, Deployments,
+or StatefulSets are upgraded to automatically trigger when new images are available. Routes make it
+trivial to expose your Kubernetes services via a public DNS name. As an administrator, you can enable
+your developers to request new Projects which come with predefined roles, quotas, and security controls
+ to fairly divide access.
+
+image::https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/Images/OpenShift-Container-platform.jpg[]
+
+Openshift provides an interesting feature called [Source-to-Image (S2I)](https://github.com/openshift/source-to-image),
+ a tool for building/building artifacts from source and injecting into docker images.
+S2I enables an openshift user to provide the url to their project repository and they get their
+ project deployed on the Openshift platform. Its  an advantage over Kubernetes where you're required
+  to provide the container image urls of your app for deployment.
+
+For more, refer to the openshift docs: https://github.com/openshift/openshift-docs
+
+The Openshift 'umbrella' provides multiple flavours:
+
+### Openshift Origin
+
+[OpenShift Origin](https://github.com/openshift/origin) is an application platform where developers and teams can build, test, deploy,
+and run their applications. OpenShift Origin also serves as the upstream code base upon which
+ OpenShift Online and OpenShift Container Platform are built. Its a community project.
+
+### Openshift Online
+
+OpenShift Online is a multi-tenant, cloud-based container platform, managed by Red Hat.
+It is is for individual developers or teams that access OpenShift as a public cloud service, and provides
+ a container-based platform that developers can access from any web browser, IDE and command line.
+If an individual or a group wants to host their containerised app, Openshift Online serves an ideal solution. 
+
+### Openshift Dedicated
+
+[OpenShift Dedicated](https://www.openshift.com/dedicated/) is a single-tenant, cloud-based container platform, managed by Red Hat.
+Its target are organisations and enterprises that require a dedicated cluster for themselves.
+
+### Openshift Container Platform
+
+Formerly called Openshift Enterprise, its a  the container platform software for customer
+ to deploy and manage on their own in an infrastructure of choice. 
+[OpenShift Container Platform](https://www.openshift.com/container-platform/) is a private platform as a service (PaaS) for organizations
+ that deploy and manage OpenShift on their own on-premises hardware or on the infrastructure
+ of a certified cloud provider like AWS, Rackspace etc.
+
+# Openshift.io
+
+[OpenShift.io](https://openshift.io/) is a cloud-native development environment for planning, creating and deploying hybrid cloud services.
+ It provides a full toolchain for development teams, in the cloud with zero setup and maintenance.
+OSIO is a group of several  coordinating microservices which provides you an end-to-end experience of application
+development. You can deploy your application via OSIO itself. OSIO first provides a preview(staging version) of
+your application and then the user gets the option to promote the app to a production hosting.
+These deployments are done on the Openshift Online platform.
+
+The upstream for openshift.io is primarily in the fabric8 and Eclipse Che projects.
+
+* Github repository : https://github.com/openshiftio/openshift.io
+* Overview video from the Red Hat Summit 2017 : https://www.youtube.com/watch?v=lkNVTY3vzvs
