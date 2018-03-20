@@ -1,0 +1,13 @@
+# ISTIO
+
+## Introduction:
+
+https://istio.io is a one stop site for complete and latest info on purpose, architecture and capabilities of istio.
+Additionally a short tutorial can also be found https://learn.openshift.com/servicemesh[here]
+
+## Deployment:
+
+Steps to install istio along with app installation with istio components injected can be found https://github.com/redhat-developer-demos/istio-tutorial[here]
+Additionally 2 new scripts are added here[https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/tree/master/scripts] which can be used to install istio and also install app with istio dependencies injected.
+
+For dev environment setup, refer https://github.com/fabric8-hdd/fabric8-hypothesis-documentation/blob/master/DevEnvironmentSetup.asciidoc[this]
